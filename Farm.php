@@ -12,7 +12,7 @@
 /* 
 Класс фермы  автономный, сам ведет учёт номеров животных, собирает продукцию и ведет ее подсчет. 
 */
-
+require_once 'Animal.php';
 
 class Farm  {
 
@@ -62,7 +62,7 @@ class Farm  {
 }
 
 class СhickenСoop extends Farm implements FarmInterface {
-    
+
     public function createAnimal(): Animal {
         return new Chicken();
     }
