@@ -24,3 +24,4 @@ $farm->CountOfDivisionProducts();
 echo '<pre>'; print_r($farm->getBarn()); echo '</pre>';
 echo '<pre>'; print_r($farm->getProductsDepartament()); echo '</pre>';
 echo $farm->totalProduct();
+
