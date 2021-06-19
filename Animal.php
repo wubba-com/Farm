@@ -1,5 +1,6 @@
 <?php
 
+// Класс животных которые будут создаваться фабричным методом классами реализующие интерфейс DivisionInterface
 abstract class Animal {
 
     protected int $countProduct;
@@ -14,6 +15,7 @@ abstract class Animal {
     
 }
 
+// Конкретные животные
 class Cow extends Animal {
     protected int $countProduct = 10;
 

@@ -1,76 +1,60 @@
 <?php
 
-/*
-Созданию интерфейс класса для того что бы данные методы были 
-реализованы для дальнейшей регистрации животного на ферме и их обработки
-*/
-
-/*
-Создается объект животного со своими характеристами и типом
-*/
-
 /* 
 Класс фермы  автономный, сам ведет учёт номеров животных, собирает продукцию и ведет ее подсчет. 
+
+Класс Farm является абстракцией в паттерне Мост https://refactoring.guru/ru/design-patterns/bridge
 */
-require_once 'Animal.php';
 
 class Farm  {
-
-    protected array $barn;
-    protected array $productsFromDepartament;
+    private array $productsDivisions;
+    protected array $divisions;
 
     public function __construct() {
-        $this->barn = [];
-        $this->productsFromDepartament = [];
+        $this->divisions = [];
+        $this->productsDivisions = [];
     }
 
     /*
-    В данном методе мы можем добавлять любой тип животных объекта Animal и также они будут группироваться по своему типу. При добавления животного происходит его регистраця на ферме и вносятся его хаарктеристики.
+    Метод добавяет подразделение к себе на ферму. Будь это коровник или курятник итд
     */
-    public function addAnimal(Animal $animal) {
-        $this->barn[get_class($animal)][] = $animal;
+    public function addDivision(DivisionInterface $division) {
+        $this->divisions[get_class($division)] = $division;
+    }
+
+    public function getDivision() {
+        return $this->divisions;
     }
 
     /*
-    Метод собирает продукцию в каждом отделе
+    В данном методе единственным параметром является подразделение, которое производит своих животных.
+    Далее мы делегируем уже обязаности создания животных на это подразделение
+    */
+    public function addAnimal(DivisionInterface $division) {
+        $division->addAnimal($division->createAnimal());
+    }
+
+    /*
+    Метод собирает продукцию в каждом отделе. Ферма делегирует обязанность подсчитать количество продуктов СВОИМ подразделениям
     */
     public function CountOfDivisionProducts() {
-        foreach ($this->barn as $key => $typeAnimal) {
-            $count = 0;
-            foreach ($typeAnimal as $animal) {
-                $count += $animal->getCountProduct();
-            }
-            $this->productsFromDepartament[$key] = $count;
+        foreach ($this->divisions as $key => $division) {
+            $division->countProduct();
+            $this->productsDivisions[$key] = $division->getProductDivision();
         }
-
     }
 
-    public function getBarn() {
-        return $this->barn;
-    }
-
+    /*
+    Метод возвращает количество продуктов которые находятся в разных подразделениях
+    */
     public function getProductsDepartament() {
-        return $this->productsFromDepartament;
+        return $this->productsDivisions;
     }
 
     /*
     Метод подсчитывает общее количество продукции в единицах
     */
     public function totalProduct() {
-        return array_sum($this->productsFromDepartament);
-    }
-}
-
-class СhickenСoop extends Farm implements FarmInterface {
-
-    public function createAnimal(): Animal {
-        return new Chicken();
-    }
-}
-
-class Cowshed extends Farm implements FarmInterface {
-
-    public function createAnimal(): Animal {
-        return new Cow();
+        return array_sum($this->productsDivisions);
     }
 }
